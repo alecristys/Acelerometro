@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -18,7 +19,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float X, Y, Z;
     private TextView ValorX, ValorY, ValorZ, LogText;
     private ScrollView scrollview;
-
+    int latigo=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Sensores = (SensorManager) getSystemService(SENSOR_SERVICE);
         SensorAce = Sensores.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         Sensores.registerListener(this,SensorAce,SensorManager.SENSOR_DELAY_NORMAL);
-
+        if(Sensores == null);
+        finish();
         List<Sensor> listSensores = Sensores.getSensorList(Sensor.TYPE_ALL);
         for(Sensor sensor:listSensores){
             log("Sensor: " + sensor.getName().toString()) ;
@@ -73,6 +75,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 Y = sensorEvent.values[1];
                 Z = sensorEvent.values[2];
             } catch (Exception ex){}
+
+            System.out.println("Valor del giro"+X);
+            if(X<-5 && latigo==0){
+                latigo++;
+
+
+            }
+            else if (X>5 && latigo==1){
+                latigo++;
+
+            }
+            if(latigo==2){
+                sound();
+                latigo=0;}
         }
 
     }
@@ -80,5 +96,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
+    }
+
+    private void sound() {
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.latigo);
+        mediaPlayer.start();
     }
 }
